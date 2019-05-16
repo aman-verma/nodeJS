@@ -38,8 +38,13 @@ router.delete('/:orderId', function(req, res, next) {
 
 
 router.post('/', function(req, res, next) {
+    const order = {
+        productId: req.body.productId,
+        quantity: req.body.quantity,
+    }
     res.status(201).json({
-        message: 'Order was created'
+        message: 'Order was created',
+        order:order
     });
 });
 
