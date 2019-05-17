@@ -9,8 +9,8 @@ const orderRoutes = require('./api/routes/orders');
 
 mongoose.connect('mongodb://localhost/nrs', {useNewUrlParser:true});
 
-app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({urlencoded:false}));
+app.use(morgan('dev')); 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
@@ -40,6 +40,6 @@ app.use(function(error, req, res, next) {
     res.json({
         "message": error.message
     }) 
-})
+});
 
 module.exports = app;
