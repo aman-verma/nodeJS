@@ -11,6 +11,7 @@ mongoose.connect('mongodb://localhost/nrs', {useNewUrlParser:true});
 mongoose.Promise = global.Promise;
 
 app.use(morgan('dev')); 
+app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

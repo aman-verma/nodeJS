@@ -1,11 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const mongoose  = require('mongoose')
+const mongoose  = require('mongoose');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, './uploads/');
+    },
+    filename: function(req, file, cb) {
+      cb(null, new Date().toISOString() + file.originalname);
+    }
+  });
+
+const fileFilter = (req, file, cb) => {
+    // reject a file
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/svg+xml') {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
 
 const Product = require('../models/product');
 
 router.get('/', function(req, res, next) {
     Product.find()
+    .select("name price _id productImage")
     .exec()
     .then(function(docs){
         const response = {
@@ -15,6 +43,7 @@ router.get('/', function(req, res, next) {
                 name: docs.name,
                 price: docs.price,
                 _id: docs._id,
+                productImage: docs.productImage,
                 request: {
                   type: "GET",
                   url: "http://localhost:3000/products/" + docs._id
@@ -30,11 +59,13 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.post('/', function(req, res, next) {
+router.post('/', upload.single('productImage'), function(req, res, next) {
+    console.log(req.file);
     const product = new Product({
         _id:  new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        productImage: req.file.path 
     });
     product.save().then(function (result){
         console.log(result);
@@ -61,6 +92,7 @@ router.get('/:productId', function(req, res, next) {
     const id = req.params.productId;
     console.log(id)
     Product.findById(id)
+    .select('name price _id productImage')
     .exec()
     .then(function(doc){
         console.log("From database", doc)
