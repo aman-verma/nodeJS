@@ -8,6 +8,7 @@ const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
 mongoose.connect('mongodb://localhost/nrs', {useNewUrlParser:true});
+mongoose.Promise = global.Promise;
 
 app.use(morgan('dev')); 
 app.use(bodyParser.urlencoded({ extended: true }));
